@@ -1,8 +1,22 @@
-from my_todos_api_base import app, db
+from my_todos_api_base import app, db, ws
 from my_todos_api_model import Todo
 from datetime import datetime
 from flask import request
 
+# WebSockets
+@ws.on('connect')
+def connect():
+  print('Nouvelle Connexion WebSocket')
+
+@ws.on('toggling')
+def toggleOneById(id):
+  todo = Todo.query.get(id)
+  todo.isDone = not todo.isDone
+  db.session.commit()
+  ws.emit('toggled', todo.toJson())  
+
+
+# API REST
 @app.route('/todo', methods=['GET'])
 def getAll():
   return [t.toJson() for t in Todo.query.all()]
@@ -103,7 +117,10 @@ def deleteOneById(id):
     return { 'error': 'La tâche n°' + str(id) + ' n\'existe pas' }, 404
   db.session.delete(todo)
   db.session.commit()
+  
+  ws.emit('removed', id) 
   return "", 204
 
 
-app.run(debug=True)
+#app.run(debug=True)
+ws.run(app, debug=True)

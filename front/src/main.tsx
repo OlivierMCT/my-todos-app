@@ -6,7 +6,10 @@ import './index.css';
 import { RouterProvider } from 'react-router';
 import TodoList from './views/TodoList.tsx';
 import TodoAdd from './views/TodoAdd.tsx';
+import TodosProvider from './components/TodosProvider.tsx';
+import { connect } from 'socket.io-client';
 
+export let socket = connect('http://localhost:5000');
 const router = createBrowserRouter([
   {
     path: '/',
@@ -17,7 +20,6 @@ const router = createBrowserRouter([
       {
         path: 'mes-taches',
         element: <TodoList />,
-        loader: () => fetch('http://localhost:5000/todo'),
       },
       {
         path: 'nouvelle-tache',
@@ -29,6 +31,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <TodosProvider>
+      <RouterProvider router={router} />
+    </TodosProvider>
   </React.StrictMode>
 );

@@ -1,16 +1,21 @@
-import { useReducer } from "react";
-import { TodoState, TodosContext, TodosDispatch, TodosReducer } from "../contexts/TodoContext";
+import { useReducer } from 'react';
+import {
+  TodoState,
+  TodosContext,
+  TodosDispatch,
+  TodosReducer,
+} from '../contexts/TodoContext';
 
-const TodosProvider = ({children}) => {
+const TodosProvider = ({ children }) => {
   const intialTodoState: TodoState = {
     todos: [],
-    categories: []
-  }
+    categories: [],
+  };
   const [todoState, todoDispatch] = useReducer(TodosReducer, intialTodoState);
   return (
     <>
       <TodosContext.Provider value={todoState}>
-        <TodosDispatch.Provider value={todoDispatch}>    
+        <TodosDispatch.Provider value={todoDispatch}>
           {children}
         </TodosDispatch.Provider>
       </TodosContext.Provider>

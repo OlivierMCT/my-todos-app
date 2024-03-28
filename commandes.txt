@@ -2,6 +2,7 @@
 py -m pip install flask
 py -m pip install flask_sqlalchemy
 py -m pip install flask_cors
+py -m pip install flask_socketio
 
 # React
 npm create vite@latest

@@ -1,15 +1,32 @@
-import { Outlet} from 'react-router';
+import { Outlet } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import TodosProvider from './components/TodosProvider';
 import TodoCounter from './components/TodoCounter';
-
+import { useContext, useEffect } from 'react';
+import { connect } from 'socket.io-client';
+import { TodoActionType, TodosDispatch } from './contexts/TodoContext';
+import { TodoDto } from './models/Todo';
 
 
 function App() {
+  const todosDispatch = useContext(TodosDispatch);
+  
+  useEffect(() => {     
+    let socket = connect('http://localhost:5000')
+    socket.on('toggled', (todo: TodoDto) =>
+      todosDispatch({ type: TodoActionType.TOGGLE, dto: todo })
+    );
+
+    socket.on('removed', (id: number) =>
+      todosDispatch({ type: TodoActionType.REMOVE, id: id })
+    );
+
+    return () => { socket.close() }
+  }, [])
 
   return (
     <>
-      <TodosProvider>
+      
         <header>
           <h1 className='container-fluid'>Mes trucs à faire</h1>
         </header>
@@ -46,7 +63,6 @@ function App() {
             </span>
           </div>
         </footer>
-      </TodosProvider>
     </>
   );
 }

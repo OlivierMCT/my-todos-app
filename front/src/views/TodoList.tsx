@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import {
   TodoActionType,
   TodoActions,
@@ -6,7 +6,6 @@ import {
   TodosContext,
   TodosDispatch,
 } from '../contexts/TodoContext';
-import { useLoaderData } from 'react-router';
 import { TodoDto } from '../models/Todo';
 import TodoDetails from '../components/TodoDetails';
 
@@ -14,20 +13,25 @@ const TodoList = () => {
   const todosContext = useContext(TodosContext) as TodoState;
   const todosDispatch = useContext(TodosDispatch);
 
-  let action: TodoActions = {
-    type: TodoActionType.LOAD,
-    dtos: useLoaderData() as TodoDto[],
-  };
-  todosDispatch(action);
-
+  useEffect(() => {
+    fetch('http://localhost:5000/todo').then((r) =>
+      r.json().then((data) => {
+        let action: TodoActions = {
+          type: TodoActionType.LOAD,
+          dtos: data as TodoDto[],
+        };
+        todosDispatch(action);
+      })
+    );
+  }, []);
 
   let todos = todosContext.todos;
-  todos.sort((t1, t2) => t1.title.localeCompare(t2.title))
+  todos.sort((t1, t2) => t1.title.localeCompare(t2.title));
 
   return (
     <section>
       {todos.map((todo) => (
-        <TodoDetails todo={todo} />
+        <TodoDetails key={todo.id} todo={todo} />
       ))}
     </section>
   );
